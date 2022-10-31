@@ -8,7 +8,7 @@ class Game {
   int timestamp;
   int competitors;
   String get date {
-    var format = DateFormat('y-M-d');
+    var format = DateFormat('d-M-y');
     return format.format(DateTime.fromMillisecondsSinceEpoch(timestamp));
   }
   Game({required this.id, required this.timestamp, required this.competitors});
