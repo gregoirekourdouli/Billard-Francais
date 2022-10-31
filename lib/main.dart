@@ -108,8 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Provider.of<GameProvider>(context, listen: false).addGame(
-              Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch));
           _dialogBuilder(context);
         },
         tooltip: 'Nouvelle partie',
@@ -126,6 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
           return SimpleDialog(title: const Text("Type de partie"), children: [
             SimpleDialogOption(
               onPressed: () {
+                Provider.of<GameProvider>(context, listen: false).addGame(
+                    Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch, competitors: 1));
+                Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const CurrentGameView()));
               },
@@ -133,6 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SimpleDialogOption(
               onPressed: () {
+                Provider.of<GameProvider>(context, listen: false).addGame(
+                    Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch, competitors: 0));
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const CurrentGameView()));
               },
               child: const Text("Avec adversaire"),

@@ -6,11 +6,12 @@ import 'package:intl/intl.dart';
 class Game {
   int id;
   int timestamp;
+  int competitors;
   String get date {
     var format = DateFormat('y-M-d');
     return format.format(DateTime.fromMillisecondsSinceEpoch(timestamp));
   }
-  Game({required this.id, required this.timestamp});
+  Game({required this.id, required this.timestamp, required this.competitors});
 }
 
 class GameProvider extends ChangeNotifier {
