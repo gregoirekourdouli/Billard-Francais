@@ -225,7 +225,7 @@ abstract class _GameViewState extends State<GameView> {
           title: Text('${game.date} - ${game.id}'),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () {
-            print("Bonjour");
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => CurrentGameView(game: game)));
           },
         ));
   }
