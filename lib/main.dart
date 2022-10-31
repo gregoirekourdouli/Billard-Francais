@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return showDialog(
         context: context,
         builder: (context) {
-          return SimpleDialog(title: const Text("Type de partie"), children: [
+          return SimpleDialog(title: const Text("Jouer ..."), children: [
             SimpleDialogOption(
               onPressed: () async {
                 final provider = Provider.of<GameProvider>(context, listen: false);
@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (_) => CurrentGameView(game: game,)));
               },
-              child: const Text("Avec adversaire"),
+              child: const Text("Avec un adversaire"),
             )
           ]);
         });
