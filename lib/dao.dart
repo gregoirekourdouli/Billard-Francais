@@ -50,4 +50,17 @@ class DAO {
     await _db.executeQuery(
         "UPDATE games SET favorite = ${favorite.toString()} WHERE id = ${game.id}");
   }
+
+  Future<Game> getLastSavedGame() async {
+    final results = await _db.selectQuery(
+        "SELECT id, timestamp, competitors FROM games ORDER BY id DESC LIMIT 1");
+    if (results.length != 1) {
+      throw 'Could not retrieve the last game';
+    }
+    final result = results.elementAt(0);
+    return Game(
+        id: result['id'] as int,
+        timestamp: result['timestamp'] as int,
+        competitors: result['competitors'] as int);
+  }
 }

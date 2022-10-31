@@ -18,10 +18,11 @@ class GameProvider extends ChangeNotifier {
 
   final _dao = DAO();
 
-  Future<List<Game>> getGames() => _dao.getGames();
-  Future<List<Game>> getFavoriteGames() => _dao.getFavoriteGames();
+  Future<List<Game>> getGames() async => await _dao.getGames();
+  Future<List<Game>> getFavoriteGames() async => await _dao.getFavoriteGames();
+  Future<Game> getLastSavedGame() async => await _dao.getLastSavedGame();
 
-  void addGame(Game game) async {
+  addGame(Game game) async {
     await _dao.addGame(game);
     notifyListeners();
   }

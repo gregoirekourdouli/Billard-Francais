@@ -123,21 +123,25 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (context) {
           return SimpleDialog(title: const Text("Type de partie"), children: [
             SimpleDialogOption(
-              onPressed: () {
-                Provider.of<GameProvider>(context, listen: false).addGame(
+              onPressed: () async {
+                final provider = Provider.of<GameProvider>(context, listen: false);
+                await provider.addGame(
                     Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch, competitors: 1));
+                final game = await provider.getLastSavedGame();
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const CurrentGameView()));
+                    MaterialPageRoute(builder: (_) => CurrentGameView(game: game)));
               },
               child: const Text("Seul"),
             ),
             SimpleDialogOption(
-              onPressed: () {
-                Provider.of<GameProvider>(context, listen: false).addGame(
+              onPressed: () async {
+                final provider = Provider.of<GameProvider>(context, listen: false);
+                await provider.addGame(
                     Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch, competitors: 0));
+                final game = await provider.getLastSavedGame();
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const CurrentGameView()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => CurrentGameView(game: game,)));
               },
               child: const Text("Avec adversaire"),
             )
@@ -147,7 +151,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CurrentGameView extends StatelessWidget {
-  const CurrentGameView({super.key});
+  const CurrentGameView({super.key, required this.game});
+  final Game game;
 
   @override
   Widget build(BuildContext context) {
@@ -155,10 +160,24 @@ class CurrentGameView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Partie"),
       ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("${game.date} - ${game.id}")
+          ],
+        )
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
 
+          },
+        child: const Icon(Icons.add_rounded)
+      ),
     );
   }
 }
+
+
 
 abstract class GameView extends StatefulWidget {
   const GameView({Key? key}) : super(key: key);
