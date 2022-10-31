@@ -106,14 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
           children: const <Widget>[FavoriteGameView(), OtherGameView()],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Provider.of<GameProvider>(context, listen: false).addGame(
               Game(id: 0, timestamp: DateTime.now().millisecondsSinceEpoch));
           _dialogBuilder(context);
         },
-        tooltip: 'Add a game',
-        child: const Icon(Icons.add_rounded),
+        tooltip: 'Nouvelle partie',
+        label: const Text("Nouvelle partie"),
+        icon: const Icon(Icons.add_rounded),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
