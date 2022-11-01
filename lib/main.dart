@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
           providers: [
             ChangeNotifierProvider(create: (_) => ThemeProvider()),
             ChangeNotifierProvider(create: (_) => GameProvider()),
+            ChangeNotifierProvider(create: (_) => TurnProvider()),
           ],
           child: Consumer<ThemeProvider>(builder: (context, provider, child) {
             return MaterialApp(

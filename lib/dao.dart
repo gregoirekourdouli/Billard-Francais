@@ -63,4 +63,24 @@ class DAO {
         timestamp: result['timestamp'] as int,
         competitors: result['competitors'] as int);
   }
+
+  //////////////////////////////////////////////////////////
+
+  Future<List<Turn>> getTurns(Game game, int competitorId) async {
+    final results = await _db.selectQuery("SELECT id, points FROM turns WHERE gameId = ${game.id} AND competitorId = $competitorId");
+    return results.map((e) => Turn(id: e['id'] as int, points: e['points'] as int)).toList();
+  }
+
+  Future<int> getScore(Game game, int competitorId) async {
+    final results = await _db.selectQuery("SELECT gameId, competitorId, SUM(points) as points FROM turns GROUP BY gameId, competitorId HAVING gameId = ${game.id} AND competitorId = $competitorId");
+    if (results.length != 1) {
+      return 0;
+    }
+    final e = results[0];
+    return e['points'] as int;
+  }
+
+  addPoints(Game game, int competitorId, int points) async {
+    await _db.executeQuery("INSERT INTO turns (gameId, competitorId, points) VALUES (${game.id}, $competitorId, $points)");
+  }
 }

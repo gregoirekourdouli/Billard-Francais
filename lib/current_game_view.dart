@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'competitor_view.dart';
 import 'model.dart';
@@ -14,11 +15,6 @@ class CurrentGameView extends StatefulWidget {
 
 class _CurrentGameViewState extends State<CurrentGameView> {
   int _index = 0;
-
-  static const List<Widget> _competitorViews = [
-    CompetitorView(competitorId: 0),
-    CompetitorView(competitorId: 1)
-  ];
 
   Widget? _bottomBarBuilder() {
     if (widget.game.competitors == 2) {
@@ -51,10 +47,13 @@ class _CurrentGameViewState extends State<CurrentGameView> {
       appBar: AppBar(
         title: const Text("Partie"),
       ),
-      body: _competitorViews[_index],
+      body: CompetitorView(competitorId: _index, game: widget.game),
       bottomNavigationBar: _bottomBarBuilder(),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {}, child: const Icon(Icons.add_rounded)),
+          onPressed: () {
+            Provider.of<TurnProvider>(context, listen: false).addPoints(widget.game, _index, 10);
+          },
+          child: const Icon(Icons.add_rounded)),
     );
   }
 }
