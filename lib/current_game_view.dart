@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'competitor_view.dart';
@@ -51,9 +52,29 @@ class _CurrentGameViewState extends State<CurrentGameView> {
       bottomNavigationBar: _bottomBarBuilder(),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Provider.of<TurnProvider>(context, listen: false).addPoints(widget.game, _index, 10);
+            Provider.of<TurnProvider>(context, listen: false)
+                .addPoints(widget.game, _index, 10);
           },
           child: const Icon(Icons.add_rounded)),
     );
+  }
+}
+
+class AddTurnDialog extends StatelessWidget {
+  const AddTurnDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        child: TextField(
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly
+      ],
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Entrer le nombre de points obtenus',
+      ),
+    ));
   }
 }

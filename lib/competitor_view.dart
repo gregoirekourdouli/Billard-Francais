@@ -2,24 +2,125 @@ import 'package:billard_fr/model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CompetitorView extends StatelessWidget {
-  const CompetitorView(
-      {super.key, required this.competitorId, required this.game});
+abstract class _CardRow extends StatelessWidget {
+  const _CardRow({required this.competitorId, required this.game});
 
   final int competitorId;
   final Game game;
 
-  Widget _pointTextBuilder(context, AsyncSnapshot<int> snapshot) {
+  String getTitle();
+
+  TextStyle getTitleStyle(BuildContext context);
+
+  TextStyle getDataStyle(BuildContext context);
+
+  Widget getFutureBuilder(
+      BuildContext context, TurnProvider provider, Widget? child);
+
+  Widget _pointTextBuilder(context, snapshot) {
     if (snapshot.hasData) {
-      return Text(snapshot.data!.toString(),
-          style: Theme.of(context).textTheme.titleLarge ??
-              const TextStyle(fontSize: 25));
+      return Text(snapshot.data!.toString(), style: getDataStyle(context));
     } else if (snapshot.hasError) {
       throw snapshot.error ?? "Could not retrieve turns";
     } else {
       return const Center(child: CircularProgressIndicator());
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(getTitle(), style: getTitleStyle(context))),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Consumer<TurnProvider>(builder: getFutureBuilder)),
+      ],
+    );
+  }
+}
+
+class _CardTotalRow extends _CardRow {
+  const _CardTotalRow({required super.competitorId, required super.game});
+
+  @override
+  TextStyle getDataStyle(BuildContext context) {
+    return Theme.of(context).textTheme.titleLarge ??
+        const TextStyle(fontSize: 25);
+  }
+
+  @override
+  String getTitle() => 'Total';
+
+  @override
+  TextStyle getTitleStyle(BuildContext context) => getDataStyle(context);
+
+  @override
+  Widget getFutureBuilder(
+      BuildContext context, TurnProvider provider, Widget? child) {
+    return FutureBuilder<int>(
+        future: provider.getScore(game, competitorId),
+        builder: _pointTextBuilder);
+  }
+}
+
+class _CardAvgRow extends _CardRow {
+  const _CardAvgRow({required super.competitorId, required super.game});
+
+  @override
+  TextStyle getDataStyle(BuildContext context) {
+    return Theme.of(context).textTheme.titleMedium ??
+        const TextStyle(fontSize: 20);
+  }
+
+  @override
+  String getTitle() => "Moyenne";
+
+  @override
+  TextStyle getTitleStyle(BuildContext context) => getDataStyle(context);
+
+  @override
+  Widget getFutureBuilder(
+      BuildContext context, TurnProvider provider, Widget? child) {
+    return FutureBuilder<double>(
+        future: provider.getAvg(game, competitorId),
+        builder: _pointTextBuilder);
+  }
+}
+
+class _CardCountRow extends _CardRow {
+  const _CardCountRow({required super.competitorId, required super.game});
+
+  @override
+  TextStyle getDataStyle(BuildContext context) {
+    return Theme.of(context).textTheme.titleMedium ??
+        const TextStyle(fontSize: 20);
+  }
+
+  @override
+  Widget getFutureBuilder(
+      BuildContext context, TurnProvider provider, Widget? child) {
+    return FutureBuilder<int>(
+        future: provider.getTurnCount(game, competitorId),
+        builder: _pointTextBuilder);
+  }
+
+  @override
+  String getTitle() => "Nb de reprises";
+
+  @override
+  TextStyle getTitleStyle(BuildContext context) => getDataStyle(context);
+}
+
+class CompetitorView extends StatelessWidget {
+  const CompetitorView(
+      {super.key, required this.competitorId, required this.game});
+
+  final int competitorId;
+  final Game game;
 
   Widget _cardBuilder(BuildContext context) {
     return Padding(
@@ -32,24 +133,18 @@ class CompetitorView extends StatelessWidget {
           ),
           borderRadius: const BorderRadius.all(Radius.circular(12)),
         ),
-        child: SizedBox(
-            height: 80,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: Column(
               children: [
+                _CardTotalRow(competitorId: competitorId, game: game),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text("Total",
-                        style: Theme.of(context).textTheme.titleLarge ??
-                            const TextStyle(fontSize: 25))),
+                    padding: const EdgeInsets.only(top: 20),
+                    child: _CardAvgRow(competitorId: competitorId, game: game)),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Consumer<TurnProvider>(
-                        builder: (context, provider, child) {
-                      return FutureBuilder<int>(
-                          future: provider.getScore(game, competitorId),
-                          builder: _pointTextBuilder);
-                    })),
+                    padding: const EdgeInsets.only(top: 10),
+                    child:
+                        _CardCountRow(competitorId: competitorId, game: game)),
               ],
             )),
       ),

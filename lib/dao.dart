@@ -1,4 +1,5 @@
 import 'package:billard_fr/db.dart';
+import 'package:sqlite3/common.dart';
 
 import 'model.dart';
 
@@ -14,8 +15,8 @@ class DAO {
   final _db = Db();
 
   Future<List<Game>> getGames() async {
-    final results = await _db
-        .selectQuery("SELECT id, timestamp, competitors FROM games WHERE favorite = 0");
+    final results = await _db.selectQuery(
+        "SELECT id, timestamp, competitors FROM games WHERE favorite = 0");
     return results
         .map((e) => Game(
             id: e['id'] as int,
@@ -25,8 +26,8 @@ class DAO {
   }
 
   Future<List<Game>> getFavoriteGames() async {
-    final results = await _db
-        .selectQuery("SELECT id, timestamp, competitors FROM games WHERE favorite = 1");
+    final results = await _db.selectQuery(
+        "SELECT id, timestamp, competitors FROM games WHERE favorite = 1");
     return results
         .map(
           (e) => Game(
@@ -67,12 +68,17 @@ class DAO {
   //////////////////////////////////////////////////////////
 
   Future<List<Turn>> getTurns(Game game, int competitorId) async {
-    final results = await _db.selectQuery("SELECT id, points FROM turns WHERE gameId = ${game.id} AND competitorId = $competitorId");
-    return results.map((e) => Turn(id: e['id'] as int, points: e['points'] as int)).toList();
+    final results = await _db.selectQuery(
+        "SELECT id, points FROM turns WHERE gameId = ${game.id} AND competitorId = $competitorId");
+    return results
+        .map((e) => Turn(id: e['id'] as int, points: e['points'] as int))
+        .toList();
   }
 
-  Future<int> getScore(Game game, int competitorId) async {
-    final results = await _db.selectQuery("SELECT gameId, competitorId, SUM(points) as points FROM turns GROUP BY gameId, competitorId HAVING gameId = ${game.id} AND competitorId = $competitorId");
+  String _getSql(String operation, Game game, int competitorId) =>
+      "SELECT gameId, competitorId, $operation(points) as points FROM turns GROUP BY gameId, competitorId HAVING gameId = ${game.id} AND competitorId = $competitorId";
+
+  int _getPoint(ResultSet results) {
     if (results.length != 1) {
       return 0;
     }
@@ -80,7 +86,27 @@ class DAO {
     return e['points'] as int;
   }
 
+  Future<int> getScore(Game game, int competitorId) async {
+    final results = await _db.selectQuery(_getSql("SUM", game, competitorId));
+    return _getPoint(results);
+  }
+
+  Future<double> getAvg(Game game, int competitorId) async {
+    final results = await _db.selectQuery(_getSql("AVG", game, competitorId));
+    if (results.length != 1) {
+      return 0;
+    }
+    final e = results[0];
+    return e['points'] as double;
+  }
+
+  Future<int> getCount(Game game, int competitorId) async {
+    final results = await _db.selectQuery(_getSql("COUNT", game, competitorId));
+    return _getPoint(results);
+  }
+
   addPoints(Game game, int competitorId, int points) async {
-    await _db.executeQuery("INSERT INTO turns (gameId, competitorId, points) VALUES (${game.id}, $competitorId, $points)");
+    await _db.executeQuery(
+        "INSERT INTO turns (gameId, competitorId, points) VALUES (${game.id}, $competitorId, $points)");
   }
 }

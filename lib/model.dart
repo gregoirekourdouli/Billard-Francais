@@ -56,6 +56,12 @@ class TurnProvider extends ChangeNotifier {
   Future<int> getScore(Game game, int competitorId) async =>
       await _dao.getScore(game, competitorId);
 
+  Future<double> getAvg(Game game, int competitorId) async =>
+      await _dao.getAvg(game, competitorId);
+
+  Future<int> getTurnCount(Game game, int competitorId) async =>
+      await _dao.getCount(game, competitorId);
+
   void addPoints(Game game, int competitorId, int points) async {
     await _dao.addPoints(game, competitorId, points);
     notifyListeners();
