@@ -16,7 +16,7 @@ class DAO {
 
   Future<List<Game>> getGames() async {
     final results = await _db.selectQuery(
-        "SELECT id, timestamp, competitors FROM games WHERE favorite = 0");
+        "SELECT id, timestamp, competitors FROM games WHERE favorite = 0 ORDER BY id DESC");
     return results
         .map((e) => Game(
             id: e['id'] as int,
@@ -27,7 +27,7 @@ class DAO {
 
   Future<List<Game>> getFavoriteGames() async {
     final results = await _db.selectQuery(
-        "SELECT id, timestamp, competitors FROM games WHERE favorite = 1");
+        "SELECT id, timestamp, competitors FROM games WHERE favorite = 1 ORDER BY id DESC");
     return results
         .map(
           (e) => Game(
@@ -69,7 +69,7 @@ class DAO {
 
   Future<List<Turn>> getTurns(Game game, int competitorId) async {
     final results = await _db.selectQuery(
-        "SELECT id, points FROM turns WHERE gameId = ${game.id} AND competitorId = $competitorId");
+        "SELECT id, points FROM turns WHERE gameId = ${game.id} AND competitorId = $competitorId ORDER BY id DESC");
     return results
         .map((e) => Turn(id: e['id'] as int, points: e['points'] as int))
         .toList();

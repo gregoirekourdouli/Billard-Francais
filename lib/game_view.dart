@@ -39,6 +39,14 @@ abstract class _GameViewState extends State<GameView> {
 
   Widget? getLeadingWidget();
 
+  String getTileTitle(Game game) {
+    if (game.competitors == 1) {
+      return '${game.id} - Seul';
+    } else {
+      return '${game.id} - Avec adversaire';
+    }
+  }
+
   Widget _buildTile(BuildContext context, Game game, List<Game> games) {
     return Dismissible(
         key: Key(game.id.toString()),
@@ -50,7 +58,8 @@ abstract class _GameViewState extends State<GameView> {
         secondaryBackground: getSecondBackground(),
         child: ListTile(
           leading: getLeadingWidget(),
-          title: Text('${game.date} - ${game.id}'),
+          title: Text(getTileTitle(game)),
+          subtitle: Text(game.date),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => CurrentGameView(game: game)));

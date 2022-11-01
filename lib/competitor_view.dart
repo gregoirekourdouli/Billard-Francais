@@ -14,12 +14,14 @@ abstract class _CardRow extends StatelessWidget {
 
   TextStyle getDataStyle(BuildContext context);
 
+  String getData(dynamic data);
+
   Widget getFutureBuilder(
       BuildContext context, TurnProvider provider, Widget? child);
 
   Widget _pointTextBuilder(context, snapshot) {
     if (snapshot.hasData) {
-      return Text(snapshot.data!.toString(), style: getDataStyle(context));
+      return Text(getData(snapshot.data!), style: getDataStyle(context));
     } else if (snapshot.hasError) {
       throw snapshot.error ?? "Could not retrieve turns";
     } else {
@@ -65,6 +67,9 @@ class _CardTotalRow extends _CardRow {
         future: provider.getScore(game, competitorId),
         builder: _pointTextBuilder);
   }
+
+  @override
+  String getData(data) => data.toString();
 }
 
 class _CardAvgRow extends _CardRow {
@@ -88,6 +93,11 @@ class _CardAvgRow extends _CardRow {
     return FutureBuilder<double>(
         future: provider.getAvg(game, competitorId),
         builder: _pointTextBuilder);
+  }
+
+  @override
+  String getData(data) {
+    return (data as double).toStringAsFixed(2);
   }
 }
 
@@ -113,6 +123,9 @@ class _CardCountRow extends _CardRow {
 
   @override
   TextStyle getTitleStyle(BuildContext context) => getDataStyle(context);
+
+  @override
+  String getData(data) => data.toString();
 }
 
 class CompetitorView extends StatelessWidget {

@@ -51,30 +51,69 @@ class _CurrentGameViewState extends State<CurrentGameView> {
       body: CompetitorView(competitorId: _index, game: widget.game),
       bottomNavigationBar: _bottomBarBuilder(),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Provider.of<TurnProvider>(context, listen: false)
-                .addPoints(widget.game, _index, 10);
-          },
-          child: const Icon(Icons.add_rounded)),
+        onPressed: () {
+          _dialogBuilder(context);
+        },
+        tooltip: "Ajouter des points",
+        child: const Icon(Icons.add_rounded),
+      ),
     );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AddTurnDialog(game: widget.game, competitorId: _index);
+        });
   }
 }
 
-class AddTurnDialog extends StatelessWidget {
-  const AddTurnDialog({super.key});
+class AddTurnDialog extends StatefulWidget {
+  const AddTurnDialog(
+      {super.key, required this.game, required this.competitorId});
+
+  final Game game;
+  final int competitorId;
+
+  @override
+  State<AddTurnDialog> createState() => _AddTurnDialogState();
+}
+
+class _AddTurnDialogState extends State<AddTurnDialog> {
+  final controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-        child: TextField(
-      keyboardType: TextInputType.number,
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly
-      ],
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'Entrer le nombre de points obtenus',
-      ),
-    ));
+    return AlertDialog(
+        title: const Text("Ajouter des points"),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: 'Entrer le nombre de points obtenus',
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Provider.of<TurnProvider>(context, listen: false).addPoints(
+                    widget.game,
+                    widget.competitorId,
+                    int.parse(controller.text));
+                Navigator.of(context).pop();
+              },
+              child: const Text("Ok"))
+        ]);
   }
 }
