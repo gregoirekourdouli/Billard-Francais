@@ -1,0 +1,57 @@
+name: Application artefacts
+
+# Controls when the workflow will run
+on:
+  push:
+    tags: [ "*" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Setup Java to compile Android project
+        uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+      - name: Setup Flutter packages
+        run: flutter pub get
+      - name: Build Android app bundle
+        run: flutter build appbundle --release
+      - name: Sign Android app bundle
+        run: jarsigner -keystore keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} -keypass ${{ secrets.KEYSTORE_PASSWORD_ALIAS }} -sigalg SHA256withRSA -digestalg SHA-256 -signedjar build/app/outputs/bundle/release/app-release-signed.aab build/app/outputs/bundle/release/*.aab app-release-key
+      - name: Publish Android artefact
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-android-aab-signed
+          path: build/app/outputs/bundle/release/app-release-signed.aab
+  ios:
+    if: ${{ false }}  # disable for now
+    runs-on: macos-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+      - name: Setup Flutter packages
+        run: flutter pub get
+      - name: Build IOS app
+        run: flutter build ios --release --no-codesign
+      - name: Publish IOS artefact
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-ios-notsigned
+          path: build/ios/iphoneos/Runner.app
