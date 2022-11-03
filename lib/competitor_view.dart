@@ -119,7 +119,7 @@ class _CardCountRow extends _CardRow {
   }
 
   @override
-  String getTitle() => "Nb de reprises";
+  String getTitle() => "Reprises";
 
   @override
   TextStyle getTitleStyle(BuildContext context) => getDataStyle(context);
