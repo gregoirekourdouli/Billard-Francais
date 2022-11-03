@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
                   colorScheme: darkColorScheme ?? _defaultDarkColorScheme,
                   useMaterial3: provider.isMaterial3),
               themeMode: provider.isDark ? ThemeMode.dark : ThemeMode.light,
-              home: const MyHomePage(title: 'L\'appli pour Fred'),
+              home: const MyHomePage(title: 'Billard français'),
             );
           }));
     });
