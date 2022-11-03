@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.billard_fr">
+    package="fr.kdli.billard_fr">
    <application
         android:label="Billard Français"
         android:name="${applicationName}"
