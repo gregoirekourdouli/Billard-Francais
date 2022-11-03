@@ -22,7 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: 'master'
           architecture: x64
       - name: Setup Flutter packages
         run: flutter pub get
