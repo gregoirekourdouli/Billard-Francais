@@ -1,4 +1,4 @@
-package com.example.billard_fr
+package fr.kdli.billard_fr
 
 import io.flutter.embedding.android.FlutterActivity
 
